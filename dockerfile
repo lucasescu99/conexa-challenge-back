@@ -1,24 +1,20 @@
-# Use the official Node.js 14 image as the base image
-FROM node:14
+# Base image
+FROM node:18
 
-# Set the working directory inside the container to /app
-WORKDIR /app
+# Create app directory
+WORKDIR /usr/src/app
 
-# Copy the package.json and package-lock.json files to the container
+# A wildcard is used to ensure both package.json AND package-lock.json are copied
 COPY package*.json ./
 
-# Install the dependencies
+# Install app dependencies
 RUN npm install
 
-# Copy the rest of the application code to the container
+# Bundle app source
 COPY . .
 
-# Set the environment variables
-ENV PORT=3000
-ENV API_BASE_URL=https://swapi.dev/api
+# Creates a "dist" folder with the production build
+RUN npm run build
 
-# Expose port 3000
-EXPOSE 3000
-
-# Start the application
-CMD [ "npm", "run", "start" ]
+# Start the server using the production build
+CMD [ "node", "dist/main.js" ]
